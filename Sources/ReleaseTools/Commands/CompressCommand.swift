@@ -22,7 +22,7 @@ struct CompressCommand: ParsableCommand {
         commandName: "compress",
         abstract: "Compress the output of the export command for distribution."
     )
-
+    @Flag(help: "Skip making the unversioned zip.") var skipUnversioned: Bool
     @OptionGroup() var scheme: SchemeOption
     @OptionGroup() var platform: PlatformOption
     @OptionGroup() var website: WebsiteOption
@@ -46,10 +46,15 @@ struct CompressCommand: ParsableCommand {
         if result.status != 0 {
             throw CompressError.compressFailed(result.stderr)
         }
-        
-        parsed.log("Saving copy of archive to \(website.websiteURL.path) as \(parsed.archive.unversionedZipName).")
-        let latestZip = website.websiteURL.appendingPathComponent(parsed.archive.unversionedZipName)
-        try? FileManager.default.removeItem(at: latestZip)
-        try FileManager.default.copyItem(at: destination, to: latestZip)
+
+        if skipUnversioned {
+            parsed.log("Skipping the unversioned archive")
+            return
+        }else{
+            parsed.log("Saving copy of archive to \(website.websiteURL.path) as \(parsed.archive.unversionedZipName).")
+            let latestZip = website.websiteURL.appendingPathComponent(parsed.archive.unversionedZipName)
+            try? FileManager.default.removeItem(at: latestZip)
+            try FileManager.default.copyItem(at: destination, to: latestZip)
+        }
     }
 }
