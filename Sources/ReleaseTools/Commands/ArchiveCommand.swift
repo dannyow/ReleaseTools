@@ -32,6 +32,7 @@ struct ArchiveCommand: ParsableCommand {
     )
 
     @Option(help: "Additional xcconfig file to use when building") var xcconfig: String?
+    @Option(help: "Configuration name to use when building") var configuration: String?
     @OptionGroup() var scheme: SchemeOption
     @OptionGroup() var platform: PlatformOption
     @OptionGroup() var options: CommonOptions
@@ -52,6 +53,9 @@ struct ArchiveCommand: ParsableCommand {
         var args = ["-workspace", parsed.workspace, "-scheme", parsed.scheme, "archive", "-archivePath", parsed.archiveURL.path]
         if let config = xcconfig {
             args.append(contentsOf: ["-xcconfig", config])
+        }
+        if let configurationName = configuration {
+            args.append(contentsOf: ["-configuration", configurationName])
         }
         
         switch parsed.platform {
