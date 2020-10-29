@@ -38,12 +38,17 @@ struct ExportCommand: ParsableCommand {
         )
 
         parsed.log("Generating export options for \(distribution ? "direct" : "appstore") distribution.")
+        //print("😡\(ProcessInfo.processInfo.environment)")
         do {
-            let options = [
+            var options = [
                 "iCloudContainerEnvironment": "Production",
                 "signingStyle": "automatic",
-                "method": distribution ? "developer-id" : "app-store"
+                "method": distribution ? "developer-id" : "app-store",
                 ]
+            if let teamID = ProcessInfo.processInfo.environment["DEVELOPMENT_TEAM"] {
+                options["teamID"] = teamID
+            }
+
             let data = try PropertyListSerialization.data(fromPropertyList: options, format: .xml, options: 0)
             try data.write(to: parsed.exportOptionsURL)
         } catch {
