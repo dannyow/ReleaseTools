@@ -77,6 +77,15 @@ class OptionParser {
                 }
             }
         }
+        // Search in parent folder
+        let parentURL = URL(fileURLWithPath: "..")
+        if let contents = try? FileManager.default.contentsOfDirectory(at: parentURL, includingPropertiesForKeys: [], options: [.skipsPackageDescendants, .skipsSubdirectoryDescendants, .skipsHiddenFiles]) {
+            for item in contents {
+                if item.pathExtension == "xcworkspace" {
+                    return "../"+item.lastPathComponent
+                }
+            }
+        }
         return nil
     }
     
